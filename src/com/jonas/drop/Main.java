@@ -8,17 +8,17 @@ public class Main implements Gravity, Time {
     public static void main(String[] args) {
 
         Cube cube = new Cube();
+
         // setting position to 5 meters
         cube.setInitialPositionY(100);
-        // equation to get time
         cube.emulateDrop();
+        // equation to get time
+        //cube.emulateDrop();
+
+
 
     }
 
 }
 
-/**
- * List
- LinkedList
- ArrayList
- */
+

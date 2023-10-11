@@ -7,6 +7,7 @@ import java.text.DecimalFormat;
 
 public abstract class AObjects implements Gravity, Time {
     DecimalFormat df = new DecimalFormat("#.##");
+
     // Physical attribution
     int volume;
     int weight;
@@ -15,7 +16,7 @@ public abstract class AObjects implements Gravity, Time {
     // Motion
     private double time = 0.0;
     private double initialPositionY;
-    private double newPositionY;
+    private double positionY;
     private double velocity;
 
 
@@ -23,37 +24,37 @@ public abstract class AObjects implements Gravity, Time {
 
         double point = getInitialPositionY();
         do {
-            setNewPositionY(getInitialPositionY() - ((0.5 * gravitationalAcceleration) * Math.pow(getTime(), 2)));
+            setPositionY(getInitialPositionY() - ((0.5 * gravitationalAcceleration) * Math.pow(getTime(), 2)));
             setVelocity(gravitationalAcceleration * getTime());
 
-            if (getNewPositionY() < 0) {
+            if (getPositionY() < 0) {
                 impactSound();
                 impactDetails();
                 break;
             }
 
-            printMotionInfo(point);
+            if (getPositionY() < point && getPositionY() > point - 1) {
+
+                printMotionInfo();
+                point--;
+            }
             setTime(getTime() + timeStep);
 
-        } while (getNewPositionY() >= 0);
+        } while (getPositionY() >= 0);
     }
 
-    void printMotionInfo(double point) {
-        if (getNewPositionY() < point && getNewPositionY() > point - 1) {
-
-            System.out.println("Time: " + Math.ceil(getTime() * 100) / 100 + " [s]\n" +
-                    "Position: " + Math.ceil(getNewPositionY()) + " [m]\n" +
-                    "Velocity: " + Math.ceil(getVelocity() * 100) / 100 + " [m/s]\n");
-
-            point--;
-        }
+    private void printMotionInfo() {
+        System.out.println("Time: " + Math.ceil(getTime() * 100) / 100 + " [s]\n" +
+                "Position: " + Math.ceil(getPositionY()) + " [m]\n" +
+                "Velocity: " + Math.ceil(getVelocity() * 100) / 100 + " [m/s]\n");
     }
-    void impactSound() {
+
+    private void impactSound() {
         System.out.println();
 
-        if (initialPositionY <= 3) {
+        if (getInitialPositionY() <= 3) {
             System.out.println("Boink");
-        } else if (initialPositionY > 3 && initialPositionY < 10) {
+        } else if (getInitialPositionY() > 3 && getInitialPositionY() < 10) {
             System.out.println("BOINK BOINK BOINK....Boink");
         } else {
             System.out.println("...!!!!! BOOOOOOiiiNK !!!!!...");
@@ -61,14 +62,15 @@ public abstract class AObjects implements Gravity, Time {
 
         System.out.println();
     }
-    void impactDetails() {
-        newPositionY = 0;
-        time = Math.sqrt(initialPositionY / (gravitationalAcceleration * 0.5));
-        velocity = gravitationalAcceleration * time;
 
-        System.out.println("Time at impact: " + Math.ceil(time * 100) / 100 + " [s]\n" +
-                "Position: " + Math.ceil(newPositionY) + " [m]\n" +
-                "Velocity at impact: " + Math.ceil(velocity * 100) / 100 + " [m/s]\n");
+    private void impactDetails() {
+        setPositionY(0);
+        setTime(Math.sqrt(getInitialPositionY() / (gravitationalAcceleration * 0.5)));
+        setVelocity(gravitationalAcceleration * getTime());
+
+        System.out.println("Time at impact: " + Math.ceil(getTime() * 100) / 100 + " [s]\n" +
+                "Position: " + Math.ceil(getPositionY()) + " [m]\n" +
+                "Velocity at impact: " + Math.ceil(getVelocity() * 100) / 100 + " [m/s]\n");
     }
 
     // GET ´n SET
@@ -76,8 +78,8 @@ public abstract class AObjects implements Gravity, Time {
         this.initialPositionY = initialPositionY;
     }
 
-    private void setNewPositionY(double newPositionY) {
-        this.newPositionY = newPositionY;
+    private void setPositionY(double positionY) {
+        this.positionY = positionY;
     }
 
     private double getTime() {
@@ -92,8 +94,8 @@ public abstract class AObjects implements Gravity, Time {
         return initialPositionY;
     }
 
-    private double getNewPositionY() {
-        return newPositionY;
+    private double getPositionY() {
+        return positionY;
     }
 
     private double getVelocity() {
